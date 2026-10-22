@@ -17,6 +17,20 @@ jobs:
           mkdir project
           for f in parts/*.zip; do unzip -oq "$f" -d project; done
 
+      - name: Fetch the parts the zip leaves out
+        working-directory: project/android-keyboard-0.1.30
+        run: |
+          git lfs install
+          get() { rm -rf "$2"; git clone --depth 1 "$1" "$2"; }
+          get https://gitlab.futo.org/keyboard/android-libs.git libs
+          get https://github.com/futo-org/futo-keyboard-layouts.git java/assets/layouts
+          get https://gitlab.futo.org/keyboard/seasonal-themes.git java/assets/themes
+          get https://gitlab.futo.org/keyboard/keyboard-translations-public.git translations
+          get https://gitlab.futo.org/keyboard/keyboard-large-resources.git java/res-large
+          get https://gitlab.futo.org/keyboard/voice-input-models.git voiceinput-shared/src/main/ml || echo "voice models skipped"
+          get https://huggingface.co/futo-org/futo-swipe java/assets/futo-swipe || echo "swipe model skipped"
+          ls libs
+
       - name: Install the Android NDK
         run: |
           SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
