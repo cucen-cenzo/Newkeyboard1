@@ -17,8 +17,11 @@ jobs:
           mkdir project
           for f in parts/*.zip; do unzip -oq "$f" -d project; done
 
-      - name: Accept Android licenses
-        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
+      - name: Install the Android NDK
+        run: |
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          yes | "$SDKM" --licenses > /dev/null || true
+          "$SDKM" "ndk;28.2.13676358" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Build
         working-directory: project/android-keyboard-0.1.30
